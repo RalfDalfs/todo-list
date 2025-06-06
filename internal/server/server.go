@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/RalfDalfs/todo-list/internal/api"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
@@ -18,6 +19,7 @@ func Run() error {
 	if port == 0 {
 		port = 7540
 	}
+	api.Init()
 	http.Handle("/", http.FileServer(http.Dir("./web/")))
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
