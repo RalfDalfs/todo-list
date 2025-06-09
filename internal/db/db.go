@@ -9,6 +9,7 @@ import (
 
 var db *sql.DB
 
+// Шаблон для создания БД если она отсутствует
 const schema = `CREATE TABLE IF NOT EXISTS scheduler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date CHAR(8) NOT NULL,
@@ -21,6 +22,7 @@ const schema = `CREATE TABLE IF NOT EXISTS scheduler (
 CREATE INDEX IF NOT EXISTS scheduler_date ON scheduler(date);
 `
 
+// Init открывает базу данных, создаёт её по шаблону если она не создана
 func Init(dbFile string) error {
 	_, err := os.Stat(dbFile)
 	dbExists := !os.IsNotExist(err)

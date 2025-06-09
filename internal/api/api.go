@@ -5,11 +5,13 @@ import (
 	"time"
 )
 
+// Init инициализирует апи хендлеры
 func Init() {
 	http.HandleFunc("/api/nextdate", nextDayHandler)
 	http.HandleFunc("/api/task", taskHandler)
 }
 
+// nextDayHandler возвращает следующую дату для задачи
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	now := r.FormValue("now")
 	date := r.FormValue("date")
@@ -34,6 +36,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(nextDate))
 }
 
+// taskHandler обрабатывает операции с задачами
 func taskHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:

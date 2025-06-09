@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// addTaskHandler обрабатывает добавление новой задачи
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var task db.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
@@ -37,21 +38,24 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"id": id})
 }
 
+// sendJSONError преобразует сообщение об ошибки в JSON формат и отправляет его
 func sendJSONError(w http.ResponseWriter, message string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(map[string]string{"error": message})
 }
 
+// checkDate проверяет дату на корректность
 func checkDate(task *db.Task) error {
 	now := time.Now()
 	if task.Date == "" {
-		task.Date = now.Format("20060102")
+		task.Date = now.Format(TimeFormat)
 	}
-	t, err := time.Parse("20060102", task.Date)
+	t, err := time.Parse(TimeFormat, task.Date)
 	if err != nil {
 		return err
 	}
+	// приводим переменную  now и t чтобы их можно было корректно сравнить
 	now = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
 
@@ -65,7 +69,7 @@ func checkDate(task *db.Task) error {
 
 	if t.Before(now) {
 		if task.Repeat == "" {
-			task.Date = now.Format("20060102")
+			task.Date = now.Format(TimeFormat)
 		} else {
 			task.Date = next
 		}

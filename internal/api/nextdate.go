@@ -11,6 +11,7 @@ type Weekday int
 
 const TimeFormat = "20060102"
 
+// NextDate вычисляет следующую дату задачи
 func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 	if repeat == "" {
 		return "", errors.New("repeat is required")
@@ -37,6 +38,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 	}
 }
 
+// checkCorrectDay проверяет на корректность день
 func checkCorrectDay(d []int) bool {
 	for _, i := range d {
 		if i > 31 || i == 0 || i < -2 {
@@ -46,6 +48,7 @@ func checkCorrectDay(d []int) bool {
 	return true
 }
 
+// convertStringToInt преобразует строку в слайс чисел
 func convertStringToInt(s string) ([]int, error) {
 	slStr := strings.Split(s, ",")
 	var result []int
@@ -60,6 +63,7 @@ func convertStringToInt(s string) ([]int, error) {
 
 }
 
+// contains проверяет есть ли число в слайсе чисел
 func contains(weekdays []int, day int) bool {
 	for _, weekday := range weekdays {
 		if weekday == day {
@@ -69,6 +73,7 @@ func contains(weekdays []int, day int) bool {
 	return false
 }
 
+// afterNow смотрит не является ли текущая дата больше чем передаваемая
 func afterNow(date, now time.Time) bool {
 	if date.After(now) {
 		return true
@@ -77,6 +82,7 @@ func afterNow(date, now time.Time) bool {
 	}
 }
 
+// handleDaily повторяет задачу каждые n дней
 func handleDaily(now, date time.Time, rep []string) (string, error) {
 	if len(rep) < 2 {
 		return "", errors.New("missing days value")
@@ -100,6 +106,7 @@ func handleDaily(now, date time.Time, rep []string) (string, error) {
 	return date.Format(TimeFormat), nil
 }
 
+// handleYearly повторяет задачу каждый год
 func handleYearly(now, date time.Time) (string, error) {
 	for {
 		date = date.AddDate(1, 0, 0)
@@ -110,6 +117,7 @@ func handleYearly(now, date time.Time) (string, error) {
 	return date.Format(TimeFormat), nil
 }
 
+// handleWeekly повторяет задачу в указанные дни недели
 func handleWeekly(now, date time.Time, rep []string) (string, error) {
 	if len(rep) < 2 {
 		return "", errors.New("missing weekday value")
@@ -143,6 +151,7 @@ func handleWeekly(now, date time.Time, rep []string) (string, error) {
 	return date.Format(TimeFormat), nil
 }
 
+// handleMonthly повторяет задачу в указанные дни месяца
 func handleMonthly(now, date time.Time, rep []string) (string, error) {
 	if len(rep) < 2 {
 		return "", errors.New("missing days value")

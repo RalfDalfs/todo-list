@@ -15,11 +15,13 @@ func main() {
 	if dbFile == "" {
 		dbFile = "./scheduler.db"
 	}
-
+	// Инициализация базы данных
 	err := db.Init(dbFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	//запуск сервера
 	server.Run()
 
 }

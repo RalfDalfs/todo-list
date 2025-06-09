@@ -1,5 +1,6 @@
 package db
 
+// Task описывает задачу
 type Task struct {
 	ID      string `json:"id"`
 	Date    string `json:"date"`
@@ -8,6 +9,7 @@ type Task struct {
 	Repeat  string `json:"repeat"`
 }
 
+// AddTask добавляет задачу в БД
 func AddTask(task *Task) (int64, error) {
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
 
