@@ -25,7 +25,6 @@ func Init(dbFile string) error {
 	_, err := os.Stat(dbFile)
 	dbExists := !os.IsNotExist(err)
 	db, err = sql.Open("sqlite", dbFile)
-	defer db.Close()
 	if err != nil {
 		return fmt.Errorf("Не удалось открыть БД:%v", err)
 	}
