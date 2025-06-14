@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -10,6 +11,31 @@ import (
 type Weekday int
 
 const TimeFormat = "20060102"
+
+// nextDayHandler возвращает следующую дату для задачи
+func nextDayHandler(w http.ResponseWriter, r *http.Request) {
+	now := r.FormValue("now")
+	date := r.FormValue("date")
+	repeat := r.FormValue("repeat")
+	if now == "" {
+		now = time.Now().Format(TimeFormat)
+	}
+	nowForm, err := time.Parse(TimeFormat, now)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	nextDate, err := NextDate(nowForm, date, repeat)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(nextDate))
+}
 
 // NextDate вычисляет следующую дату задачи
 func NextDate(now time.Time, dstart string, repeat string) (string, error) {

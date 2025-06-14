@@ -33,16 +33,10 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]interface{}{"id": id})
-}
-
-// sendJSONError преобразует сообщение об ошибки в JSON формат и отправляет его
-func sendJSONError(w http.ResponseWriter, message string, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(map[string]string{"error": message})
+	writeJSON(w, map[string]int64{"id": id}, http.StatusOK)
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusCreated)
+	//	json.NewEncoder(w).Encode(map[string]interface{}{"id": id})
 }
 
 // checkDate проверяет дату на корректность
