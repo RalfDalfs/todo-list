@@ -1,5 +1,7 @@
 package db
 
+import "time"
+
 // Task описывает задачу
 type Task struct {
 	ID      string `json:"id"`
@@ -24,6 +26,56 @@ func AddTask(task *Task) (int64, error) {
 func Tasks(limit int) ([]*Task, error) {
 	query := `SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date DESC LIMIT ?`
 	rows, err := db.Query(query, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	tasks := make([]*Task, 0)
+	for rows.Next() {
+		task := new(Task)
+		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+// TasksSearch производит поиск в базе данных по ключевому слову
+func TasksSearch(search string, limit int) ([]*Task, error) {
+	searchPattern := "%" + search + "%"
+	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?`
+	rows, err := db.Query(query, searchPattern, searchPattern, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	tasks := make([]*Task, 0)
+	for rows.Next() {
+		task := new(Task)
+		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+// TasksDate производит поиск в базе данных по дате
+func TasksDate(date time.Time, limit int) ([]*Task, error) {
+	dateF := date.Format("20060102")
+	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? LIMIT ?`
+	rows, err := db.Query(query, dateF, limit)
 	if err != nil {
 		return nil, err
 	}
