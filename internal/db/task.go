@@ -1,12 +1,15 @@
 package db
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Task описывает задачу
 type Task struct {
-	ID      string `json:"id"`
+	ID      int64  `json:"id"`
 	Date    string `json:"date"`
-	Title   string `json:"title", required`
+	Title   string `json:"title"`
 	Comment string `json:"comment"`
 	Repeat  string `json:"repeat"`
 }
@@ -20,6 +23,34 @@ func AddTask(task *Task) (int64, error) {
 		return 0, err
 	}
 	return res.LastInsertId()
+}
+
+func GetTask(id int64) (*Task, error) {
+	var task Task
+
+	query := `SELECT * FROM scheduler WHERE id = ?`
+	err := db.QueryRow(query, id).Scan(
+		&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+	if err != nil {
+		return nil, err
+	}
+	return &task, nil
+}
+
+func UpdateTask(task *Task) error {
+	query := `UPDATE scheduler SET date = ?, title = ?, comment = ?, repeat = ? WHERE id = ?`
+	res, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return fmt.Errorf(`incorrect id for updating task`)
+	}
+	return nil
 }
 
 // Tasks получает задачи из БД
