@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/RalfDalfs/todo-list/internal/db"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -22,17 +21,12 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 
 // getTaskHandler выдаёт задачу по её айди
 func getTaskHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
+	id := r.URL.Query().Get("id")
+	if id == "" {
 		sendJSONError(w, "Не указан идентификатор", http.StatusBadRequest)
 		return
 	}
 
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		sendJSONError(w, "Некорректный идентификатор", http.StatusBadRequest)
-		return
-	}
 	task, err := db.GetTask(id)
 
 	if err != nil {
@@ -50,7 +44,7 @@ func putTaskHandler(w http.ResponseWriter, r *http.Request) {
 		sendJSONError(w, "Ошибка десериализации JSON: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	if task.ID == 0 { // Добавить проверку
+	if task.ID == "" { // Добавить проверку
 		sendJSONError(w, "Не указан ID задачи", http.StatusBadRequest)
 		return
 	}

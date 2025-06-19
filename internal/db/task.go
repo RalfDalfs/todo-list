@@ -7,7 +7,7 @@ import (
 
 // Task описывает задачу
 type Task struct {
-	ID      int64  `json:"id"`
+	ID      string `json:"id"`
 	Date    string `json:"date"`
 	Title   string `json:"title"`
 	Comment string `json:"comment"`
@@ -25,7 +25,7 @@ func AddTask(task *Task) (int64, error) {
 	return res.LastInsertId()
 }
 
-func GetTask(id int64) (*Task, error) {
+func GetTask(id string) (*Task, error) {
 	var task Task
 
 	query := `SELECT * FROM scheduler WHERE id = ?`
