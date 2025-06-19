@@ -25,6 +25,7 @@ func AddTask(task *Task) (int64, error) {
 	return res.LastInsertId()
 }
 
+// GetTask достаёт задачу из бд
 func GetTask(id string) (*Task, error) {
 	var task Task
 
@@ -37,6 +38,7 @@ func GetTask(id string) (*Task, error) {
 	return &task, nil
 }
 
+// UpdateTask изменяет задачу в бд
 func UpdateTask(task *Task) error {
 	query := `UPDATE scheduler SET date = ?, title = ?, comment = ?, repeat = ? WHERE id = ?`
 	res, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
@@ -125,4 +127,35 @@ func TasksDate(date time.Time, limit int) ([]*Task, error) {
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// DeleteTask удаляет задачу из бд
+func DeleteTask(id string) error {
+	query := `DELETE FROM scheduler WHERE id = ?`
+	res, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	if rows, _ := res.RowsAffected(); rows == 0 {
+		return fmt.Errorf(`incorrect id for deleting task`)
+
+	}
+	return nil
+}
+
+// UpdateDate изменяет дату в задаче
+func UpdateDate(next string, id string) error {
+	query := `UPDATE scheduler SET date = ? WHERE id = ?`
+	res, err := db.Exec(query, next, id)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return fmt.Errorf(`incorrect id for updating task`)
+	}
+	return nil
 }

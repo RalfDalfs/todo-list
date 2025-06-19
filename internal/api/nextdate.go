@@ -27,7 +27,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	nextDate, err := NextDate(nowForm, date, repeat)
+	nextDate, err := nextDate(nowForm, date, repeat)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -38,7 +38,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // NextDate вычисляет следующую дату задачи
-func NextDate(now time.Time, dstart string, repeat string) (string, error) {
+func nextDate(now time.Time, dstart string, repeat string) (string, error) {
 	if repeat == "" {
 		return "", errors.New("repeat is required")
 	}

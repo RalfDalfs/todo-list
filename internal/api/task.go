@@ -16,7 +16,25 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 		putTaskHandler(w, r)
 	case http.MethodGet:
 		getTaskHandler(w, r)
+	case http.MethodDelete:
+		deleteHandler(w, r)
 	}
+}
+
+// deleteHandler обработчик удаления задачи
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		sendJSONError(w, "Не указан идентификатор", http.StatusBadRequest)
+		return
+	}
+	err := db.DeleteTask(id)
+	if err != nil {
+		sendJSONError(w, "Ошибка удаления задачи"+err.Error(), http.StatusBadRequest)
+		return
+	}
+	writeJSON(w, map[string]string{}, http.StatusOK)
+	return
 }
 
 // getTaskHandler выдаёт задачу по её айди
@@ -36,6 +54,7 @@ func getTaskHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, task, http.StatusOK)
 }
 
+// putTaskHandler обработчик изменения задачи
 func putTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var task db.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
@@ -117,7 +136,7 @@ func checkDate(task *db.Task) error {
 
 	var next string
 	if task.Repeat != "" {
-		next, err = NextDate(now, task.Date, task.Repeat)
+		next, err = nextDate(now, task.Date, task.Repeat)
 		if err != nil {
 			return err
 		}
