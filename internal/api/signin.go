@@ -28,14 +28,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load()
 	pAcc := os.Getenv("TODO_PASSWORD")
-	secret := []byte(pAcc)
-	hash := sha256.Sum256(secret)
-
-	claims := jwt.MapClaims{
-		"hash": hash,
-	}
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := jwtToken.SignedString(secret)
+	signedToken, err := jwtGen(pAcc)
 	if err != nil {
 		sendJSONError(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -46,4 +39,19 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		sendJSONError(w, "Invalid password", http.StatusUnauthorized)
 		return
 	}
+}
+
+func jwtGen(pAcc string) (string, error) {
+	secret := []byte(pAcc)
+	hash := sha256.Sum256(secret)
+
+	claims := jwt.MapClaims{
+		"hash": hash,
+	}
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := jwtToken.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+	return signedToken, nil
 }
