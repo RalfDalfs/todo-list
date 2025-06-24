@@ -14,6 +14,9 @@ const TimeFormat = "20060102"
 
 // nextDayHandler возвращает следующую дату для задачи
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendJSONError(w, "Method not allowed expected get method", http.StatusMethodNotAllowed)
+	}
 	now := r.FormValue("now")
 	date := r.FormValue("date")
 	repeat := r.FormValue("repeat")

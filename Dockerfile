@@ -5,7 +5,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /app/app
 
 # Stage 2: Финальный образ
-FROM ubuntu:latest
+FROM ubuntu:alpine
 RUN apt-get update && \
     apt-get install -y ca-certificates && \
     rm -rf /var/lib/apt/lists/*
@@ -16,5 +16,6 @@ COPY --from=builder /app/app /app/app
 # Копируем веб-файлы из локального контекста
 COPY web /app/web
 
-EXPOSE 7450
+ENV PORT 7450
+EXPOSE $PORT
 CMD ["./app"]

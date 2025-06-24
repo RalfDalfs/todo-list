@@ -1,14 +1,17 @@
 package api
 
 import (
-	"github.com/RalfDalfs/todo-list/internal/db"
 	"net/http"
 	"time"
+
+	"github.com/RalfDalfs/todo-list/internal/db"
 )
 
 type TasksResp struct {
 	Tasks []*db.Task `json:"tasks"`
 }
+
+const limit = 50
 
 // tasksHandler выводит задачи которы есть в БД
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +27,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		date, err := time.Parse("02.01.2006", search)
 		if err != nil {
-			tasks, err := db.TasksSearch(search, 50)
+			tasks, err := db.TasksSearch(search, limit)
 			if err != nil {
 				sendJSONError(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -32,7 +35,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, TasksResp{Tasks: tasks}, http.StatusOK)
 			return
 		}
-		tasks, err := db.TasksDate(date, 50)
+		tasks, err := db.TasksDate(date, limit)
 		if err != nil {
 			sendJSONError(w, err.Error(), http.StatusInternalServerError)
 			return

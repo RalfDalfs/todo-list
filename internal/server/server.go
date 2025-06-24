@@ -2,20 +2,16 @@ package server
 
 import (
 	"fmt"
-	"github.com/RalfDalfs/todo-list/internal/api"
-	"github.com/joho/godotenv"
+	"log"
 	"net/http"
-	"os"
+
+	"github.com/RalfDalfs/todo-list/internal/api"
+	"github.com/RalfDalfs/todo-list/internal/config"
 )
 
-func Run() error {
-	godotenv.Load()
-	port, ok := os.LookupEnv("TODO_PORT")
-	if !ok || port == "" {
-		port = "7540"
-	}
-
-	api.Init()
+func Run(cfg *config.Config) error {
+	log.Printf("Servet start port:%s\n", cfg.Port)
+	api.Init(cfg)
 	http.Handle("/", http.FileServer(http.Dir("./web/")))
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	return http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), nil)
 }

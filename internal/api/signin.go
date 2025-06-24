@@ -3,41 +3,42 @@ package api
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 	"net/http"
-	"os"
+
+	"github.com/RalfDalfs/todo-list/internal/config"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-func signinHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		sendJSONError(w, "No allowed method", http.StatusMethodNotAllowed)
-		return
-	}
+func signinHandler(cfg *config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			sendJSONError(w, "No allowed method", http.StatusMethodNotAllowed)
+			return
+		}
 
-	type pass struct {
-		Password string `json:"password"`
-	}
-	var p pass
+		type pass struct {
+			Password string `json:"password"`
+		}
+		var p pass
 
-	err := json.NewDecoder(r.Body).Decode(&p)
-	if err != nil {
-		sendJSONError(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+		err := json.NewDecoder(r.Body).Decode(&p)
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-	godotenv.Load()
-	pAcc := os.Getenv("TODO_PASSWORD")
-	signedToken, err := jwtGen(pAcc)
-	if err != nil {
-		sendJSONError(w, err.Error(), http.StatusInternalServerError)
-	}
-	if pAcc == p.Password {
-		writeJSON(w, map[string]interface{}{"token": signedToken}, http.StatusOK)
-		return
-	} else {
-		sendJSONError(w, "Invalid password", http.StatusUnauthorized)
-		return
+		pAcc := cfg.Passw
+		signedToken, err := jwtGen(pAcc)
+		if err != nil {
+			sendJSONError(w, err.Error(), http.StatusInternalServerError)
+		}
+		if pAcc == p.Password {
+			writeJSON(w, map[string]interface{}{"token": signedToken}, http.StatusOK)
+			return
+		} else {
+			sendJSONError(w, "Invalid password", http.StatusUnauthorized)
+			return
+		}
 	}
 }
 

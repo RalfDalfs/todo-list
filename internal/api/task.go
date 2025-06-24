@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/RalfDalfs/todo-list/internal/db"
 	"net/http"
 	"time"
+
+	"github.com/RalfDalfs/todo-list/internal/db"
 )
 
 // taskHandler обрабатывает операции с задачей

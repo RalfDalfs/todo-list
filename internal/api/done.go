@@ -1,9 +1,10 @@
 package api
 
 import (
-	"github.com/RalfDalfs/todo-list/internal/db"
 	"net/http"
 	"time"
+
+	"github.com/RalfDalfs/todo-list/internal/db"
 )
 
 // doneHandler делает задачу выполненной если нет правила рипит и удаляет её из бд если рипит есть ставит след. дату

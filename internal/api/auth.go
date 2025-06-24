@@ -2,13 +2,14 @@ package api
 
 import (
 	"net/http"
-	"os"
+
+	"github.com/RalfDalfs/todo-list/internal/config"
 )
 
-func auth(next http.HandlerFunc) http.HandlerFunc {
+func auth(next http.HandlerFunc, cfg *config.Config) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// смотрим наличие пароля
-		pass := os.Getenv("TODO_PASSWORD")
+		pass := cfg.Passw
 		if len(pass) > 0 {
 			var jwt string // JWT-токен из куки
 			// получаем куку

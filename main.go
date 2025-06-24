@@ -1,27 +1,22 @@
 package main
 
 import (
+	"log"
+
+	"github.com/RalfDalfs/todo-list/internal/config"
 	"github.com/RalfDalfs/todo-list/internal/db"
 	"github.com/RalfDalfs/todo-list/internal/server"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
 )
 
 func main() {
-	godotenv.Load()
-
-	dbFile := os.Getenv("TODO_DBFILE")
-	if dbFile == "" {
-		dbFile = "./scheduler.db"
-	}
+	cfg := config.New()
 	// Инициализация базы данных
-	err := db.Init(dbFile)
+	err := db.Init(cfg.DbFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	defer db.Close()
 	//запуск сервера
-	server.Run()
-
+	server.Run(cfg)
 }

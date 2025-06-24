@@ -29,7 +29,7 @@ func AddTask(task *Task) (int64, error) {
 func GetTask(id string) (*Task, error) {
 	var task Task
 
-	query := `SELECT * FROM scheduler WHERE id = ?`
+	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?`
 	err := db.QueryRow(query, id).Scan(
 		&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
